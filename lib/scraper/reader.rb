@@ -60,7 +60,7 @@ module Scraper
     unless const_defined? :REDIRECT_LIMIT
       REDIRECT_LIMIT = 3
       DEFAULT_TIMEOUT = 30
-      PARSERS = [:tidy, :html_parser]
+      PARSERS = [:tidy, :html_parser, :nokogiri]
     end
 
     unless const_defined? :TIDY_OPTIONS
@@ -208,6 +208,10 @@ module Scraper
           document = HTML::Document.new(html).find(:tag=>"html")
         when :html_parser
           document = HTML::HTMLParser.parse(content).root
+        when :nokogiri
+          parsed_html = Nokogiri.HTML(content, nil, encoding)
+          clean_html = parsed_html.css('html:first-child').to_html
+          document = HTML::Document.new(clean_html).find(:tag=>"html")
         else
           raise HTMLParseError, "No parser #{parser || "unspecified"}"
         end
