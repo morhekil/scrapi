@@ -196,7 +196,7 @@ module Scraper
             encoding = meta[1]
           end
         end
-        encoding ||= "utf8"
+        encoding ||= "utf-8"
         case (parser || :tidy)
         when :tidy
           # Make sure the Tidy path is set and always apply the default
@@ -209,7 +209,7 @@ module Scraper
         when :html_parser
           document = HTML::HTMLParser.parse(content).root
         when :nokogiri
-          parsed_html = Nokogiri.HTML(content, nil, encoding)
+          parsed_html = Nokogiri.HTML(content, encoding)
           clean_html = parsed_html.css('html:first-child').to_html
           document = HTML::Document.new(clean_html).find(:tag=>"html")
         else
